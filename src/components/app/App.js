@@ -4,9 +4,6 @@ import AppHeader from '../appHeader/AppHeader';
 import RandomChar from '../randomChar/RandomChar';
 import CharList from '../charList/CharList';
 import CharInfo from '../charInfo/CharInfo';
-import Skeleton from '../skeleton/Skeleton';
-import AppBanner from '../appBanner/appBanner';
-import ComicsList from '../comicsList/ComicsList';
 import decoration from '../../resources/img/vision.png';
 
 class App extends Component {
@@ -15,15 +12,13 @@ class App extends Component {
       <div className="app">
         <AppHeader/>
         <main>
-          <AppBanner/>
-          <ComicsList/>
-          {/* <RandomChar/>
+          <RandomChar/>
           <section className="char__content">
             <h2 className="visually-hidden">Characters</h2>
             <CharList/>
             <CharInfo/>
           </section>
-          <img src={decoration} alt="vision" aria-hidden="true" className="bg-decoration" /> */}
+          <img src={decoration} alt="vision" aria-hidden="true" className="bg-decoration" />
         </main>
       </div>
     );
