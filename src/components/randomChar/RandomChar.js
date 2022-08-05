@@ -43,7 +43,7 @@ class RandomChar extends Component {
                     </button>
                 </div>
             </section>
-        )
+        );
     }
 };
 
