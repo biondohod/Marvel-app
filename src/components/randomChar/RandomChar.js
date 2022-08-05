@@ -1,29 +1,64 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Component } from 'react';
+import MarvelService from '../../services/MarvelService';
 
 import './randomChar.scss';
 
 import thor from '../../resources/img/thor.jpeg';
 
 class RandomChar extends Component {
+
+    state = {
+        char: {
+            name: 'Thor',
+            description: "As the Norse God of thunder and lightning, Thor wields one of the greatest weapons ever made,the enchanted hammer Mjolnir. While others have described Thor as an over-muscled, oafish imbecile, he's quite smart and compassionate...",
+            thumbnail: thor,
+            homepage: null,
+            wiki: null
+        }
+    }
+    
+    marvelService = new MarvelService();
+
+    onCharLoaded = (char) => {
+        this.setState({char})
+    }
+
+    UpdateChar = () => {
+        const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
+        this.marvelService
+            .getCharacter(id)
+            .then(this.onCharLoaded);
+    }
+    
+
     render() {
+        const {char: {name, description, thumbnail, homepage, wiki}} = this.state;
+        
+        let descr = description;
+        if (descr.length === 0) {
+            descr = 'There is no information about this character yet'
+        }
+        if (descr.length > 214) {
+            descr = descr.slice(0, 215) + '...';
+        }
+
+
         return(
             <section className="randomchar">
                 <h2 className="visually-hidden">Random Character</h2>
                 <div className="randomchar__block">
-                    <img src={thor} alt="Random charater." className="randomchar__image" />
+                    <img src={thumbnail} alt="Random charater." className="randomchar__image" />
                     <div className="randomchar__info">
-                        <p className="randomchar__name">Thor</p>
+                        <p className="randomchar__name">{name}</p>
                         <p className="randomchar__descr">
-                        As the Norse God of thunder and lightning, Thor wields one of the greatest weapons ever made, 
-                        the enchanted hammer Mjolnir. While others have described Thor as an over-muscled, oafish imbecile, 
-                        he's quite smart and compassionate...
+                            {descr}
                         </p>
                         <div className="randomchar__btns">
-                            <a href="#" className="button button__main">
+                            <a href={homepage} className="button button__main">
                                 <div className="inner">Homepage</div>
                             </a>
-                            <a href="#" className="button button__secondary">
+                            <a href={wiki} className="button button__secondary">
                                 <div className="inner">Wiki</div>
                             </a>
                         </div>
@@ -38,7 +73,7 @@ class RandomChar extends Component {
                     <p className="randomchar__title randomchar__title--second">
                         Or choose another one
                     </p>
-                    <button className="button button__main">
+                    <button onClick={this.UpdateChar} className="button button__main">
                         <div className="inner">Try It</div>
                     </button>
                 </div>
