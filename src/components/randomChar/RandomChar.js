@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Component } from 'react';
 import MarvelService from '../../services/MarvelService';
+import Spinner from '../spinner/Spinner';
+import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './randomChar.scss';
 
@@ -15,55 +17,53 @@ class RandomChar extends Component {
             thumbnail: thor,
             homepage: null,
             wiki: null
-        }
+        },
+        loading: false,
+        error: false
     }
     
     marvelService = new MarvelService();
 
     onCharLoaded = (char) => {
-        this.setState({char})
+        this.setState({
+            error: false,
+            char, 
+            loading: false, 
+        });
+    }
+
+    onCharLoadedFailure = () => {
+        this.setState({
+            loading: false,
+            error: true
+        })
     }
 
     UpdateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
+        this.setState({
+            loading: true,
+            error: false
+        });
         this.marvelService
             .getCharacter(id)
-            .then(this.onCharLoaded);
+            .then(this.onCharLoaded)
+            .catch(this.onCharLoadedFailure);
     }
     
 
     render() {
-        const {char: {name, description, thumbnail, homepage, wiki}} = this.state;
-        
-        let descr = description;
-        if (descr.length === 0) {
-            descr = 'There is no information about this character yet'
-        }
-        if (descr.length > 214) {
-            descr = descr.slice(0, 215) + '...';
-        }
+        const {char, loading, error} = this.state;
 
-
+        const spinner = loading ? <Spinner/> : null;
+        const errorMessage = error ? <ErrorMessage/> : null;
+        const randomChar = !(loading || error) ? DynamicBlock(char) : null;
         return(
             <section className="randomchar">
                 <h2 className="visually-hidden">Random Character</h2>
-                <div className="randomchar__block">
-                    <img src={thumbnail} alt="Random charater." className="randomchar__image" />
-                    <div className="randomchar__info">
-                        <p className="randomchar__name">{name}</p>
-                        <p className="randomchar__descr">
-                            {descr}
-                        </p>
-                        <div className="randomchar__btns">
-                            <a href={homepage} className="button button__main">
-                                <div className="inner">Homepage</div>
-                            </a>
-                            <a href={wiki} className="button button__secondary">
-                                <div className="inner">Wiki</div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                {errorMessage}
+                {spinner}
+                {randomChar}
                 <div className="randomchar__static">
                     <p className="randomchar__title">
                         Random character for today!
@@ -81,5 +81,38 @@ class RandomChar extends Component {
         );
     }
 };
+
+const DynamicBlock = (char) => {
+    const {name, description, thumbnail, homepage, wiki} = char;
+
+    let descr = description;
+
+    if (descr.length === 0) {
+        descr = 'There is no information about this character yet'
+    }
+    if (descr.length > 214) {
+        descr = descr.slice(0, 215) + '...';
+    }
+
+    return (
+        <div className="randomchar__block">
+        <img src={thumbnail} alt="Random charater." className="randomchar__image" />
+        <div className="randomchar__info">
+            <p className="randomchar__name">{name}</p>
+            <p className="randomchar__descr">
+                {descr}
+            </p>
+            <div className="randomchar__btns">
+                <a href={homepage} className="button button__main">
+                    <div className="inner">Homepage</div>
+                </a>
+                <a href={wiki} className="button button__secondary">
+                    <div className="inner">Wiki</div>
+                </a>
+            </div>
+            </div>
+        </div>
+    );
+}
 
 export default RandomChar;

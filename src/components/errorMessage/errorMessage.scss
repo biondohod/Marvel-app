@@ -1,0 +1,18 @@
+@import '../../styles/variables.scss';
+.error {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    &__img {
+        width: 100px;
+    }
+    &__text {
+        font-weight: bold;
+        margin-top: 15px;
+        span {
+            color: $main-color;
+        }
+    }
+}
