@@ -6,19 +6,20 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './randomChar.scss';
 
-import thor from '../../resources/img/thor.jpeg';
-
 class RandomChar extends Component {
+    componentDidMount() {
+        this.UpdateChar();
+    }
 
     state = {
         char: {
-            name: 'Thor',
-            description: "As the Norse God of thunder and lightning, Thor wields one of the greatest weapons ever made,the enchanted hammer Mjolnir. While others have described Thor as an over-muscled, oafish imbecile, he's quite smart and compassionate...",
-            thumbnail: thor,
+            name: null,
+            description: null,
+            thumbnail: null,
             homepage: null,
             wiki: null
         },
-        loading: false,
+        loading: true,
         error: false
     }
     
@@ -94,9 +95,15 @@ const DynamicBlock = (char) => {
         descr = descr.slice(0, 215) + '...';
     }
 
+    let styles = {};
+
+    if (thumbnail.includes('image_not_available')) {
+        styles = {objectFit: 'contain'};
+    }
+
     return (
         <div className="randomchar__block">
-        <img src={thumbnail} alt="Random charater." className="randomchar__image" />
+        <img src={thumbnail} alt="Random charater." className="randomchar__image" style={styles}/>
         <div className="randomchar__info">
             <p className="randomchar__name">{name}</p>
             <p className="randomchar__descr">
