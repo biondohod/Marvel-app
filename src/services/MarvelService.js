@@ -20,14 +20,15 @@ class MarvelService {
     }
 
     _transformData = (char) => {
-        const {name, description, thumbnail, urls, id} = char;
+        const {name, description, thumbnail, urls, id, comics} = char;
         return {
             name: name,
             description: description ? `${char.description.slice(0, 210)}...` : 'There is no description for this character',
             thumbnail: thumbnail.path + '.' + char.thumbnail.extension,
             homepage: urls[0].url,
             wiki: urls[1].url, 
-            id: id
+            id: id,
+            comics: comics.items,
         };
     }
 }

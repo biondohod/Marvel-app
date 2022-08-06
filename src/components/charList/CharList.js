@@ -12,6 +12,7 @@ class CharList extends Component {
         loading: true,
         error: false
     }
+
     componentDidMount() {
         this.onUpdateChars()
     }
@@ -52,7 +53,7 @@ class CharList extends Component {
                 styles = {objectFit: 'fill'};
             }
             return (
-                <li key={id} className="char__item">
+                <li key={id} className="char__item" onClick={() => this.props.onUpdateSelectedChar(id)}>
                     <img src={thumbnail} alt="name" style={styles}/>
                     <div className="char__name">{name}</div>
                 </li>
