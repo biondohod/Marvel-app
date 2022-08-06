@@ -79,68 +79,120 @@ class CharInfo extends Component {
     }
 };
 
-const View = ({char, isHideBtn, showAllComics}) => {
-    const {name, description, thumbnail, homepage, wiki, comics} = char;
+class View extends Component {
 
-    let descr = description;
-
-    if (descr.length === 0) {
-        descr = 'There is no information about this character yet'
-    }
-    if (descr.length > 214) {
-        descr = descr.slice(0, 215) + '...';
+    state = {
+        comics: null,
+        isHideButton: true
     }
 
-    let styles = {};
-
-    if (thumbnail.includes('image_not_available')) {
-        styles = {objectFit: 'fill'};
-    }
-
-    let comicsList = comics.map((comic, i) => {
-        let style = {};
-        if (i > 9) {
-            return;
+    checkDescription(description) {
+        if (description.length === 0) {
+            return 'There is no information about this character yet'
         }
-        return(
-            <li className="char__comics__item" key={i} style={style}>
-                {comic.name}
-            </li>
-        )
-    });
-
-    if (comicsList.length === 0) {
-        comicsList = 'This character has not appeared in any comics.';
+        if (description.length > 214) {
+            return description.slice(0, 215) + '...';
+        }
+        return description;
     }
 
-    return (
-        <>
-            <h3 className="visually-hidden">Selected character info</h3>
-            <div className="char__basics">
-                <img src={thumbnail} alt={name} className="char__image" style={styles}/>
-                <div>
-                    <div className="char__name--info">{name}</div>
-                    <div className="char__btns">
-                        <a href={homepage} className="button button__main">
-                            <div className="inner">Homepage</div>
-                        </a>
-                        <a href={wiki} className="button button__secondary">
-                            <div className="inner">Wiki</div>
-                        </a>
+    renderComicsList(comicsList) {
+        let moreThan9 = false;
+        let comics = comicsList.map((comic, i) => {
+            let style = {};
+            if (i > 8) {
+                style = {display: 'none'};
+                moreThan9 = true;
+            }
+            return(
+                <li className="char__comics__item" key={i} style={style}>
+                    <a href={comic.url}>{comic.name}</a>
+                </li>
+            )
+        });
+    
+        if (comics.length === 0) {
+            comics = 'This character has not appeared in any comics.';
+        }
+
+        if (moreThan9) {
+            this.setState({
+                comics,
+                isHideButton: false
+            });
+        } else {
+            this.setState({comics});
+        }
+    }
+
+    showAllComics = (comicsList) => {
+        let comics = comicsList.map((comic, i) => {
+            return(
+                <li className="char__comics__item" key={i}>
+                    <a href={comic.url}>{comic.name}</a>
+                </li>
+            )
+        });
+        this.setState({
+            comics,
+            isHideButton: true
+        });
+    }
+
+    componentDidMount() {
+        const {comicsList} = this.props.char;
+        this.renderComicsList(comicsList);
+    }
+
+    render() {
+        const {name, description, thumbnail, homepage, wiki, comicsList} = this.props.char;
+        const {comics, isHideButton} = this.state;
+
+        let descr = this.checkDescription(description);
+    
+        let styles = {};
+    
+        if (thumbnail.includes('image_not_available')) {
+            styles = {objectFit: 'fill'};
+        }
+
+        const btn = (
+            <button href={wiki} className="button button__main button--long" onClick={() => this.showAllComics(comicsList)}>
+                <div className="inner">Show more comics</div>
+            </button>
+        );
+
+        return (
+            <>
+                <h3 className="visually-hidden">Selected character info</h3>
+                <div className="char__basics">
+                    <img src={thumbnail} alt={name} className="char__image" style={styles}/>
+                    <div>
+                        <div className="char__name--info">{name}</div>
+                        <div className="char__btns">
+                            <a href={homepage} className="button button__main">
+                                <div className="inner">Homepage</div>
+                            </a>
+                            <a href={wiki} className="button button__secondary">
+                                <div className="inner">Wiki</div>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="char__descr">
-                {description}
-            </div>
-            <div className="char__comics">
-                <span>Comics: </span> 
-                <ul className="char__comics__list">
-                    {comicsList}
-                </ul>
-            </div>
-        </>
-    )
+                <div className="char__descr">
+                    {descr}
+                </div>
+                <div className="char__comics">
+                    <span>Comics: </span> 
+                    <ul className="char__comics__list">
+                        {comics}
+                        {!isHideButton ? btn : null}
+                    </ul>
+                </div>
+            </>
+        )
+    }
+    
 };
 
 export default CharInfo;

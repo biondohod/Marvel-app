@@ -16,11 +16,21 @@ class MarvelService {
 
     getCharacter = async (id) => {
         const res = await this.getResource(`${this._apiBase}characters/${id}?${this._apiKey}`);
-        return this._transformData(res.data.results[0]);
+        const comics = await this.getResource(`${this._apiBase}characters/${id}/comics?${this._apiKey}`);
+        return this._transformData(res.data.results[0], comics.data.results);
     }
 
-    _transformData = (char) => {
+    _transformData = (char, comicsList) => {
         const {name, description, thumbnail, urls, id, comics} = char;
+        let comicsTransformed;
+        try {
+            comicsTransformed = comicsList.map((comic) => {
+                return {
+                    name: comic.title,
+                    url: comic.urls[0].url
+                }
+            })
+        } catch(e) {comicsTransformed = []}
         return {
             name: name,
             description: description ? `${char.description.slice(0, 210)}...` : 'There is no description for this character',
@@ -29,6 +39,7 @@ class MarvelService {
             wiki: urls[1].url, 
             id: id,
             comics: comics.items,
+            comicsList: comicsTransformed
         };
     }
 }
