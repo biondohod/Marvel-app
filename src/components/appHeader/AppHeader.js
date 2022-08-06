@@ -4,6 +4,7 @@ import { Component } from 'react';
 import './appHeader.scss';
 
 class AppHeader extends Component {
+    
     render() {
         return( 
             <header className='app__header'>

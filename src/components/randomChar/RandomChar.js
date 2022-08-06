@@ -7,10 +7,6 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import './randomChar.scss';
 
 class RandomChar extends Component {
-    componentDidMount() {
-        this.UpdateChar();
-    }
-
     state = {
         char: {
             name: null,
@@ -25,11 +21,22 @@ class RandomChar extends Component {
     
     marvelService = new MarvelService();
 
+    componentDidMount() {
+        this.UpdateChar();
+    }
+
     onCharLoaded = (char) => {
         this.setState({
             error: false,
             char, 
             loading: false, 
+        });
+    }
+
+    onCharLoading = () => {
+        this.setState({
+            loading: true,
+            error: false
         });
     }
 
@@ -42,10 +49,7 @@ class RandomChar extends Component {
 
     UpdateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-        this.setState({
-            loading: true,
-            error: false
-        });
+        this.onCharLoading();
         this.marvelService
             .getCharacter(id)
             .then(this.onCharLoaded)
@@ -58,7 +62,7 @@ class RandomChar extends Component {
 
         const spinner = loading ? <Spinner/> : null;
         const errorMessage = error ? <ErrorMessage/> : null;
-        const randomChar = !(loading || error) ? DynamicBlock(char) : null;
+        const randomChar = !(loading || error) ? <DynamicBlock char={char}/> : null;
         return(
             <section className="randomchar">
                 <h2 className="visually-hidden">Random Character</h2>
@@ -83,7 +87,7 @@ class RandomChar extends Component {
     }
 };
 
-const DynamicBlock = (char) => {
+const DynamicBlock = ({char}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
 
     let descr = description;
@@ -98,7 +102,7 @@ const DynamicBlock = (char) => {
     let styles = {};
 
     if (thumbnail.includes('image_not_available')) {
-        styles = {objectFit: 'contain'};
+        styles = {objectFit: 'fill'};
     }
 
     return (
