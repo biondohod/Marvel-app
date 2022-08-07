@@ -30,7 +30,7 @@ class App extends Component {
           <section className="char__content">
             <h2 className="visually-hidden">Characters</h2>
             <ErrorBoundary>
-              <CharList onUpdateSelectedChar={this.onUpdateSelectedChar}/> 
+              <CharList selectedChar={this.state.selectedChar} onUpdateSelectedChar={this.onUpdateSelectedChar}/> 
             </ErrorBoundary>
             <ErrorBoundary>
               <CharInfo selectedChar={this.state.selectedChar}/>

@@ -75,8 +75,17 @@ class CharList extends Component {
             .catch(this.onCharsLoadedFailure);
     }
 
+    onKeyPressed = (evt) => {
+        if (evt.key === ' ' || evt.key === "Enter") {
+            evt.preventDefault();
+            evt.target.click();
+            evt.target.blur();
+        }
+    }
+
     renderCharList() {
         const {charList} = this.state;
+        const {selectedChar} = this.props;
 
         const chars = charList.map(char => {
             const {thumbnail, name, id} = char;
@@ -86,8 +95,14 @@ class CharList extends Component {
             if (thumbnail.includes('image_not_available')) {
                 styles = {objectFit: 'fill'};
             }
+            
+            let classNames = 'char__item';
+
+            if (id === selectedChar) {
+                classNames += ' char__item--selected';
+            }
             return (
-                <li key={id} className="char__item" onClick={() => this.props.onUpdateSelectedChar(id)}>
+                <li key={id} className={classNames} onClick={() => this.props.onUpdateSelectedChar(id)} tabIndex={0} onKeyDown={this.onKeyPressed}>
                     <img src={thumbnail} alt="name" style={styles}/>
                     <div className="char__name">{name}</div>
                 </li>

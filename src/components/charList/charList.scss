@@ -36,6 +36,16 @@
         box-shadow: 0 5px 20px $main-color;
         transform: translateY(-8px);
     }
+
+    &:hover {
+        transform: translateY(-8px);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 25px blueviolet;
+        transform: translateY(-4px);
+    }
 }
 
 .char__name {
