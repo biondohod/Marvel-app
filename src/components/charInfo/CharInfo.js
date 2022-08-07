@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Component } from 'react';
+import PropTypes from 'prop-types'; 
 
 import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -194,5 +195,9 @@ class View extends Component {
     }
     
 };
+
+CharInfo.propTypes = {
+    selectedChar: PropTypes.number
+}
 
 export default CharInfo;
