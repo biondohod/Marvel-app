@@ -97,12 +97,12 @@ class View extends Component {
     }
 
     renderComicsList(comicsList) {
-        let moreThan9 = false;
+        let moreThan10 = false;
         let comics = comicsList.map((comic, i) => {
             let style = {};
-            if (i > 8) {
+            if (i > 9) {
                 style = {display: 'none'};
-                moreThan9 = true;
+                moreThan10 = true;
             }
             return(
                 <li className="char__comics__item" key={i} style={style}>
@@ -115,7 +115,7 @@ class View extends Component {
             comics = 'This character has not appeared in any comics.';
         }
 
-        if (moreThan9) {
+        if (moreThan10) {
             this.setState({
                 comics,
                 isHideButton: false
