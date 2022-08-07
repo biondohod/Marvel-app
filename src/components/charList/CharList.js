@@ -26,7 +26,7 @@ class CharList extends Component {
     }
 
     componentWillUnmount() {
-        window.removerEventListener('scroll', this.onUpdateCharsByScroll);
+        window.removeEventListener('scroll', this.onUpdateCharsByScroll);
     }
 
     onUpdateCharsByScroll = () => {
