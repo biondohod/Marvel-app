@@ -1,6 +1,5 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import { Component } from 'react';
 import PropTypes from 'prop-types'; 
+import { useEffect, useState } from 'react';
 
 import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -9,85 +8,75 @@ import Skeleton from '../skeleton/Skeleton'
 
 import './charInfo.scss';
 
+const CharInfo = (props) => {
 
-class CharInfo extends Component {
-    state = {
-        char: null,
-        loading: false,
-        error: false
+    const [char, setChar] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+
+    const marvelService = new MarvelService();
+
+    const {selectedChar} = props;
+
+    useEffect(() => {
+        updateChar();
+    }, [selectedChar]);
+
+    const onCharLoaded = (char) => {
+        setChar(char);
+        setLoading(false);
+        setError(false);
     }
 
-    marvelService = new MarvelService();
-
-    componentDidUpdate(prevProps) {
-        if (this.props.selectedChar !== prevProps.selectedChar) {
-            this.updateChar();
-        }
+    const onCharLoading = () => {
+        setLoading(true);
+        setError(false);
     }
 
-    onCharLoaded = (char) => {
-        this.setState({
-            char, 
-            loading: false, 
-            error: false,
-        });
+    const onCharLoadedFailure = () => {
+        setLoading(false);
+        setError(true);
     }
 
-    onCharLoading = () => {
-        this.setState({
-            loading: true,
-            error: false
-        });
-    }
-
-    onCharLoadedFailure = () => {
-        this.setState({
-            loading: false,
-            error: true
-        })
-    }
-
-    updateChar = () => {
-        const id = this.props.selectedChar;
+    const updateChar = () => {
+        const id = selectedChar;
 
         if (!id) {
             return;
         }
 
-        this.onCharLoading();
-        this.marvelService
+        onCharLoading();
+        marvelService
             .getCharacter(id)
-            .then(this.onCharLoaded)
-            .catch(this.onCharLoadedFailure);
+            .then(onCharLoaded)
+            .catch(onCharLoadedFailure);
     }
 
-    render() {
-        const {char, loading, error} = this.state;
+    const character = !(loading || error || !char) ? <View char={char}/> : null;
+    const spinner = loading ? <Spinner/> : null;
+    const errorMessage = error ? <ErrorMessage/> : null;
+    const skeleton = !(loading || error || char) ? <Skeleton/> : null;
 
-        const character = !(loading || error || !char) ? <View char={char}/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const errorMessage = error ? <ErrorMessage/> : null;
-        const skeleton = !(loading || error || char) ? <Skeleton/> : null;
-
-        return(
-            <section className="char__info">
-                {character}
-                {spinner}
-                {errorMessage}
-                {skeleton}
-            </section>
-        );
-    }
+    return(
+        <section className="char__info">
+            {character}
+            {spinner}
+            {errorMessage}
+            {skeleton}
+        </section>
+    );
 };
 
-class View extends Component {
+const View = (props) => {
+    const [comics, setComics] = useState(null);
+    const [isHideButton, setIsHideButton] = useState(true);
 
-    state = {
-        comics: null,
-        isHideButton: true
-    }
+    useEffect(() => {
+        const {comicsList} = props.char;
+        renderComicsList(comicsList);
+    }, []);
 
-    checkDescription(description) {
+    const checkDescription = (description) => {
         if (description.length === 0) {
             return 'There is no information about this character yet'
         }
@@ -97,7 +86,7 @@ class View extends Component {
         return description;
     }
 
-    renderComicsList(comicsList) {
+    const renderComicsList = (comicsList) => {
         let moreThan10 = false;
         let comics = comicsList.map((comic, i) => {
             let style = {};
@@ -117,16 +106,14 @@ class View extends Component {
         }
 
         if (moreThan10) {
-            this.setState({
-                comics,
-                isHideButton: false
-            });
+            setComics(comics);
+            setIsHideButton(false);
         } else {
-            this.setState({comics});
+            setComics(comics);
         }
     }
 
-    showAllComics = (comicsList) => {
+    const showAllComics = (comicsList) => {
         let comics = comicsList.map((comic, i) => {
             return(
                 <li className="char__comics__item" key={i}>
@@ -134,22 +121,13 @@ class View extends Component {
                 </li>
             )
         });
-        this.setState({
-            comics,
-            isHideButton: true
-        });
+        setComics(comics);
+        setIsHideButton(true);
     }
 
-    componentDidMount() {
-        const {comicsList} = this.props.char;
-        this.renderComicsList(comicsList);
-    }
+        const {name, description, thumbnail, homepage, wiki, comicsList} = props.char;
 
-    render() {
-        const {name, description, thumbnail, homepage, wiki, comicsList} = this.props.char;
-        const {comics, isHideButton} = this.state;
-
-        let descr = this.checkDescription(description);
+        let descr = checkDescription(description);
     
         let styles = {};
     
@@ -158,41 +136,40 @@ class View extends Component {
         }
 
         const btn = (
-            <button href={wiki} className="button button__main button--long" onClick={() => this.showAllComics(comicsList)}>
+            <button href={wiki} className="button button__main button--long" onClick={() => showAllComics(comicsList)}>
                 <div className="inner">Show more comics</div>
             </button>
         );
 
-        return (
-            <>
-                <h3 className="visually-hidden">Selected character info</h3>
-                <div className="char__basics">
-                    <img src={thumbnail} alt={name} className="char__image" style={styles}/>
-                    <div>
-                        <div className="char__name--info">{name}</div>
-                        <div className="char__btns">
-                            <a href={homepage} className="button button__main">
-                                <div className="inner">Homepage</div>
-                            </a>
-                            <a href={wiki} className="button button__secondary">
-                                <div className="inner">Wiki</div>
-                            </a>
-                        </div>
+    return (
+        <>
+            <h3 className="visually-hidden">Selected character info</h3>
+            <div className="char__basics">
+                <img src={thumbnail} alt={name} className="char__image" style={styles}/>
+                <div>
+                    <div className="char__name--info">{name}</div>
+                    <div className="char__btns">
+                        <a href={homepage} className="button button__main">
+                            <div className="inner">Homepage</div>
+                        </a>
+                        <a href={wiki} className="button button__secondary">
+                            <div className="inner">Wiki</div>
+                        </a>
                     </div>
                 </div>
-                <div className="char__descr">
-                    {descr}
-                </div>
-                <div className="char__comics">
-                    <span>Comics: </span> 
-                    <ul className="char__comics__list">
-                        {comics}
-                        {!isHideButton ? btn : null}
-                    </ul>
-                </div>
-            </>
-        )
-    }
+            </div>
+            <div className="char__descr">
+                {descr}
+            </div>
+            <div className="char__comics">
+                <span>Comics: </span> 
+                <ul className="char__comics__list">
+                    {comics}
+                    {!isHideButton ? btn : null}
+                </ul>
+            </div>
+        </>
+    )
     
 };
 
