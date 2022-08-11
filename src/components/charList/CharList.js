@@ -1,21 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import PropTypes from 'prop-types'; 
 
-import MarvelService from "../../services/MarvelService";
+import useMarvelService from "../../services/MarvelService";
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './charList.scss';
 
 const CharList = (props) => {
-    const marvelService = new MarvelService();
+    const {baseOffset, loading, error, getAllCharacters} = useMarvelService();
 
     const btnLoadMore = useRef(null);
 
     const [charList, setCharList] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    const [offset, setOffset] = useState(marvelService._baseOffset);
+    const [offset, setOffset] = useState(baseOffset);
     const [newCharListLoading, setNewCharListLoading] = useState(false);
     const [charEnded, setCharEnded] = useState(false);
 
@@ -36,36 +34,20 @@ const CharList = (props) => {
     
 
     const onCharsLoaded= (newCharList) =>{
-        let ended = false;
-
         if (newCharList.length < 9) {
-            ended = true;
+            setCharEnded(true);
         }
 
         setCharList(charList => [...charList, ...newCharList]);
-        setLoading(false);
         setNewCharListLoading(false);
         setOffset(offset => offset + 9);
-        setError(false);
-        setCharEnded(ended);
     }
 
-    const onCharsLoadedFailure = () => {
-        setLoading(false);
-        setNewCharListLoading(false);
-        setError(true);
-    }
-
-    const onCharLoading = () => {
-        setNewCharListLoading(true);
-    }
 
     const onUpdateChars = (offset) => {
-        onCharLoading();
-        marvelService
-            .getAllCharacters(offset)
-            .then(onCharsLoaded)
-            .catch(onCharsLoadedFailure);
+        setNewCharListLoading(true);
+        getAllCharacters(offset)
+            .then(onCharsLoaded);
     }
 
     const onKeyPressed = (evt) => {
@@ -108,13 +90,13 @@ const CharList = (props) => {
     }
 
 
-    const spinner = loading ? <Spinner/> : null;
+    const spinner = loading && !charList.length? <Spinner/> : null;
     const errorMessage = error ? <ErrorMessage/> : null;
-    const renderedCharList = !(loading || error) ? renderCharList() : null;
+    const renderedCharList = renderCharList();
 
     let btn = null;
 
-    if (!charEnded) {
+    if (!charEnded && !error) {
         btn = (<button 
                 ref={btnLoadMore}
                 className="button button__main button--long" 

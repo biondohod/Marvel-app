@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useEffect, useState } from 'react';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './randomChar.scss';
 
 const RandomChar = (props) => {
-    const marvelService = new MarvelService();
+    const {loading, error, getCharacter} = useMarvelService();
 
     const [char, setChar] = useState({
         name: null,
@@ -16,8 +16,6 @@ const RandomChar = (props) => {
         homepage: null,
         wiki: null
     });
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
 
     useEffect(() => {
         UpdateChar();
@@ -25,27 +23,12 @@ const RandomChar = (props) => {
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
-        setError(false);
-    }
-
-    const onCharLoading = () => {
-        setLoading(true);
-        setError(false);
-    }
-
-    const onCharLoadedFailure = () => {
-        setLoading(false);
-        setError(true);
     }
 
     const UpdateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-        onCharLoading();
-        marvelService
-            .getCharacter(id)
+        getCharacter(id)
             .then(onCharLoaded)
-            .catch(onCharLoadedFailure);
     }
     
 
@@ -79,39 +62,43 @@ const DynamicBlock = ({char}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
 
     let descr = description;
-
-    if (descr.length === 0) {
-        descr = 'There is no information about this character yet'
-    }
-    if (descr.length > 214) {
-        descr = descr.slice(0, 215) + '...';
-    }
-
-    let styles = {};
-
-    if (thumbnail.includes('image_not_available')) {
-        styles = {objectFit: 'fill'};
-    }
-
-    return (
-        <div className="randomchar__block">
-        <img src={thumbnail} alt="Random charater." className="randomchar__image" style={styles}/>
-        <div className="randomchar__info">
-            <p className="randomchar__name">{name}</p>
-            <p className="randomchar__descr">
-                {descr}
-            </p>
-            <div className="randomchar__btns">
-                <a href={homepage} className="button button__main">
-                    <div className="inner">Homepage</div>
-                </a>
-                <a href={wiki} className="button button__secondary">
-                    <div className="inner">Wiki</div>
-                </a>
+    
+    if (name && descr && thumbnail && homepage && wiki) {
+        if (descr.length === 0) {
+            descr = 'There is no information about this character yet'
+        }
+        if (descr.length > 214) {
+            descr = descr.slice(0, 215) + '...';
+        }
+    
+        let styles = {};
+    
+        if (thumbnail.includes('image_not_available')) {
+            styles = {objectFit: 'fill'};
+        }
+    
+        return (
+            <div className="randomchar__block">
+            <img src={thumbnail} alt="Random charater." className="randomchar__image" style={styles}/>
+            <div className="randomchar__info">
+                <p className="randomchar__name">{name}</p>
+                <p className="randomchar__descr">
+                    {descr}
+                </p>
+                <div className="randomchar__btns">
+                    <a href={homepage} className="button button__main">
+                        <div className="inner">Homepage</div>
+                    </a>
+                    <a href={wiki} className="button button__secondary">
+                        <div className="inner">Wiki</div>
+                    </a>
+                </div>
+                </div>
             </div>
-            </div>
-        </div>
-    );
+        );
+    }
+
+    
 }
 
 export default RandomChar;

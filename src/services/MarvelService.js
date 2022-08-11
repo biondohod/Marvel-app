@@ -1,27 +1,24 @@
-class MarvelService {
-    _apiBase = 'https://gateway.marvel.com:443/v1/public/';
-    _apiKey = 'apikey=feadd863341af4064806e0d8817d09c1'
-    _baseOffset = 194;
-    getResource = async (url) => {
-        const res = await fetch(url);
-        if (!res.ok) {
-            res.reject();
-        }
-        return res.json();
-    };
+import useHttp from "../hooks/http.hook";
 
-    getAllCharacters = async (offset = this._baseOffset) => {
-        const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&${this._apiKey}`);
-        return res.data.results.map(this._transformData);
+const useMarvelService = () => {
+    const {request, loading, error} = useHttp();
+
+    const apiBase = 'https://gateway.marvel.com:443/v1/public/';
+    const apiKey = 'apikey=feadd863341af4064806e0d8817d09c1'
+    const baseOffset = 194;
+
+    const getAllCharacters = async (offset = baseOffset) => {
+        const res = await request(`${apiBase}characters?limit=9&offset=${offset}&${apiKey}`);
+        return res.data.results.map(transformData);
     }
 
-    getCharacter = async (id) => {
-        const res = await this.getResource(`${this._apiBase}characters/${id}?${this._apiKey}`);
-        const comics = await this.getResource(`${this._apiBase}characters/${id}/comics?${this._apiKey}`);
-        return this._transformData(res.data.results[0], comics.data.results);
+    const getCharacter = async (id) => {
+        const res = await request(`${apiBase}characters/${id}?${apiKey}`);
+        const comics = await request(`${apiBase}characters/${id}/comics?${apiKey}`);
+        return transformData(res.data.results[0], comics.data.results);
     }
 
-    _transformData = (char, comicsList) => {
+    const transformData = (char, comicsList) => {
         const {name, description, thumbnail, urls, id, comics} = char;
         let comicsTransformed;
         try {
@@ -43,6 +40,8 @@ class MarvelService {
             comicsList: comicsTransformed
         };
     }
+
+    return {baseOffset, loading, error, getAllCharacters, getCharacter}
 }
 
-export default MarvelService;
+export default useMarvelService;
