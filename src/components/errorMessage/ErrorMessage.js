@@ -6,7 +6,7 @@ const ErrorMessage = () => {
         <div className="error">
             <img src={error} alt="error." className='error__img'/>
             <p className="error__text">
-                <span>Oops!</span> Something went wrong, please try again and if this does not solve the problem, try again later
+                <span>Oops!</span> Something went wrong, check your internet connection or try again, if that still doesn't solve the problem, try again later
             </p>
         </div>
     )
