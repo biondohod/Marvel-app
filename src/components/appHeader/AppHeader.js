@@ -21,7 +21,7 @@ const AppHeader = () => {
                     /
                     <li className='app__menu__item'>
                         <NavLink 
-                            end to='/comics'
+                            to='/comics'
                             style={({isActive}) => ({color: isActive ? '#9F0013': ''})}>Comics</NavLink>
                     </li>
                 </ul>

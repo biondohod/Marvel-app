@@ -1,11 +1,12 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './comicsList.scss';
+
 
 const ComicsList = (props) => {
     const { getAllComics, loading, error, baseOffset } = useMarvelService();
@@ -57,11 +58,11 @@ const ComicsList = (props) => {
             return (
                 <>
                     <li key={id} className="comics__item">
-                        <a href="#">
+                        <Link to={`${id}`}>
                             <img src={thumbnail} alt={title}  className="comics__item__img"/>
                             <div className="comics__item__name">{title}</div>
                             <div className="comics__item__price">{price}</div>
-                        </a>
+                        </Link>
                     </li>
                 </>
             )

@@ -7,6 +7,7 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton'
 
 import './charInfo.scss';
+import { Link } from 'react-router-dom';
 
 const CharInfo = (props) => {
     const {loading, error, getCharacter} = useMarvelService();
@@ -75,7 +76,7 @@ const View = (props) => {
             }
             return(
                 <li className="char__comics__item" key={i} style={style}>
-                    <a href={comic.url}>{comic.name}</a>
+                    <Link to={`comics/${comic.id}`}>{comic.name}</Link>
                 </li>
             )
         });

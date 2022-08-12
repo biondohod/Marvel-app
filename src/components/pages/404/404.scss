@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+@import '../../../styles/variables.scss';
 
 .page404 {
     display: flex;
@@ -22,7 +22,14 @@
     &__img {
         margin-top: auto;
     }
+
+    &__btns {
+      button:first-child {
+        margin-right: 15px;
+      }
+    }
 }
+
 
 @keyframes heartBeat {
     0% {

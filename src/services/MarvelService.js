@@ -20,13 +20,13 @@ const useMarvelService = () => {
 
 
     const transformData = (char, comicsList) => {
-        const {name, description, thumbnail, urls, id, comics} = char;
+        const {name, description, thumbnail, urls, id} = char;
         let comicsTransformed;
         try {
             comicsTransformed = comicsList.map((comic) => {
                 return {
                     name: comic.title,
-                    url: comic.urls[0].url
+                    id: comic.id
                 }
             })
         } catch(e) {comicsTransformed = []}
@@ -37,7 +37,6 @@ const useMarvelService = () => {
             homepage: urls[0].url,
             wiki: urls[1].url, 
             id: id,
-            comics: comics.items,
             comicsList: comicsTransformed
         };
     };
@@ -47,27 +46,35 @@ const useMarvelService = () => {
         return res.data.results.map(transformComicsData);
     };
 
+    const getComic = async (id) =>{
+        let errorCode;
+        const res = await request(`${apiBase}comics/${id}?${apiKey}`)
+                            .then((res) => {
+                                return transformComicsData(res.data.results[0])
+                            })
+                            .catch(e => {
+                                errorCode = +e.message.slice(-3);
+                            })
+        return {res, errorCode};
+    };
+
     const transformComicsData = (comics) => {
-        const {id, title, prices, thumbnail} = comics;
-
-        let price = prices[0].price;
-
-        if (!price || price === '0') {
-            price = 'Not available';
-        } else {
-            price += '$';
-        }
+        const {id, title, prices, thumbnail, textObjects, urls} = comics;
 
         return {
             id,
             title,
-            price,
-            thumbnail: `${thumbnail.path}.${thumbnail.extension}` 
+            url: urls[0].url,
+            description: comics.description || 'There is no description',
+            pageCount: comics.pageCount ? `${comics.pageCount} pages` : 'No information about the number of pages',
+            thumbnail: thumbnail.path + '.' + thumbnail.extension,
+            language: textObjects.language || 'en-us',
+            price: prices[0].price ? `${prices[0].price}$` : 'Not available'
         }
     };
 
 
-    return {baseOffset, loading, error, getAllCharacters, getCharacter, getAllComics}
+    return {baseOffset, loading, error, getAllCharacters, getCharacter, getAllComics, getComic}
 }
 
 export default useMarvelService;

@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+@import '../../../styles/variables.scss';
 
 .single-comic {
     margin-top: 50px;
@@ -31,6 +31,7 @@
         line-height: 32px;
         color: $main-color;
         margin-top: 25px;
+        margin-bottom: 15px;
     }
 
     &__back {
