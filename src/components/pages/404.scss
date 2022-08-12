@@ -1,0 +1,51 @@
+@import '../../styles/variables.scss';
+
+.page404 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__title {
+      margin-bottom: 20px;
+      font-size: 150px;
+      font-weight: 900;
+      span {
+        color: $main-color;
+      }
+    }
+
+    &__text {
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    &__img {
+        margin-top: auto;
+    }
+}
+
+@keyframes heartBeat {
+    0% {
+      transform: scale(1);
+    }
+  
+    14% {
+      transform: scale(1.02);
+    }
+  
+    28% {
+      transform: scale(1);
+    }
+  
+    42% {
+      transform: scale(1.02);
+    }
+  
+    70% {
+      transform: scale(1);
+    }
+}
+
+.heartBeat {
+    animation: heartBeat 2s infinite
+}
