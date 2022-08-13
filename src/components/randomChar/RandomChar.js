@@ -73,7 +73,7 @@ const DynamicBlock = ({char}) => {
     
         let styles = {};
     
-        if (thumbnail.includes('image_not_available')) {
+        if (thumbnail.includes('image_not_available') || thumbnail.includes('4c002e0305708')) {
             styles = {objectFit: 'fill'};
         }
     
