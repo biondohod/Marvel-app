@@ -97,7 +97,7 @@ const View = (props) => {
         let comics = comicsList.map((comic, i) => {
             return(
                 <li className="char__comics__item" key={i}>
-                    <a href={comic.url}>{comic.name}</a>
+                    <Link to={`comics/${comic.id}`}>{comic.name}</Link>
                 </li>
             )
         });
